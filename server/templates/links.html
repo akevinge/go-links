@@ -1,0 +1,252 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <link rel="shortcut icon" href="{{ url_for('static', filename='favicon.ico') }}">
+    <title>Go Links</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Open+Sans:wght@300;400;500;600;700&display=swap"
+      rel="stylesheet"
+    />
+    <script src="https://kit.fontawesome.com/ceea9b6203.js" crossorigin="anonymous"></script>
+    <script src="https://cdn.jsdelivr.net/npm/micromodal/dist/micromodal.min.js"></script>
+    <link rel= "stylesheet" type= "text/css" href= "{{ url_for('static',filename='modal.css') }}">
+
+    <style>
+        h1,h2,h3,h4,h5,h6 {
+            margin: 0;
+            padding: 0;
+        }
+        :root {
+            --color-primary: #2f6ef7;
+        }
+
+      * {
+        font-family: "Open Sans", sans-serif;
+      }
+
+      html {
+        font-size: 1.4em;
+      }
+
+      body {
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        flex-direction: column;
+      }
+
+      h1 {
+        margin: 12px 0;
+      }
+
+      .inner {
+        display: flex;
+        width: fit-content;
+        justify-content: center;
+        align-items: left;
+        flex-direction: column;
+      }
+
+      ul {
+        margin: 0;
+        padding: 0;
+      }
+
+      .link {
+        display: grid;
+        grid-template-columns: 6fr 1fr 10fr 1fr 1fr;
+        gap: 12px;
+        align-items: center;
+      }
+
+      .separator {
+        width: 2px;
+        height: 20px;
+        background-color: gray;
+      }
+
+      .go-link {
+        max-width: 20vw;
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+      }
+
+
+      .full-link {
+        max-width: 20vw;
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+        font-size: 0.8em;
+      }
+
+      a {
+        color: var(--color-primary);
+      }
+
+      span.edit-link {
+        min-width: 100px;
+        background-color: beige;
+        border-radius: 5px;
+      }
+    </style>
+
+    <script>
+        document.addEventListener("DOMContentLoaded", () => {
+            MicroModal.init();
+            disableLineBreakInput();
+        })
+
+        function disableLineBreakInput() {
+            document.querySelectorAll("span[contenteditable]").forEach((el) => {
+                el.addEventListener('keydown', (evt) => {
+                    if (evt.keyCode === 13) {
+                        evt.preventDefault();
+                    }
+                });
+            });
+        }
+
+        function openEditModal(id, goLink, fullLink) {
+            resetEdit();
+            const modal = document.getElementById("edit-modal");
+            modal.querySelector("#edit-go-link").innerHTML = goLink;
+            modal.querySelector("#edit-full-link").innerHTML = fullLink;
+            console.log(id);+
+            modal.setAttribute("data-edit-id", id);
+            MicroModal.show("edit-modal");
+        }
+
+        function resetEdit() {
+            const modal = document.getElementById("edit-modal");
+            modal.querySelector("#edit-go-link").innerHTML = "";
+            modal.querySelector("#edit-full-link").innerHTML = "";
+            modal.setAttribute("data-edit-id", "");
+        }
+
+        async function saveEdit() {
+            const modal = document.getElementById("edit-modal");
+            const id = modal.getAttribute("data-edit-id");
+            const goLink = modal.querySelector("#edit-go-link").innerHTML;
+            const fullLink = modal.querySelector("#edit-full-link").innerHTML;
+            await fetch(`http://localhost:5000/go/${id}`, { 
+                method: "PUT",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({go_link: goLink, full_link: fullLink })
+            }).then(()=> location.href = "/").catch(err=> alert("unable to edit link: ", err));
+            resetEdit();
+            MicroModal.close("edit-modal");
+        }
+
+        async function deleteLink(id) {
+            await fetch(`http://localhost:5000/go/${id}`, { 
+                method: "DELETE",
+            }).then(()=> location.href = "/").catch(err=> alert("unable to delete link: ", err));
+        }
+
+        function resetNew() {
+            const modal = document.getElementById("new-modal");
+            modal.querySelector("#new-go-link").innerHTML = "";
+            modal.querySelector("#new-full-link").value = "";
+        }
+
+        async function saveNew() {
+            const modal = document.getElementById("new-modal");
+            const goLink = modal.querySelector("#new-go-link").innerHTML;
+            const fullLink = modal.querySelector("#new-full-link").value;
+            await fetch(`http://localhost:5000/go`, { 
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({go_link: goLink, full_link: fullLink })
+            }).then(()=> location.href = "/").catch(err=> alert("unable to edit link: ", err));
+            resetNew();
+            MicroModal.close("new-modal");
+        }
+
+    </script>
+  </head>
+  <body>
+    <div class="inner">
+        <h1>Your Go Links</h1>
+        <ul>
+            {% for link in links %}
+                <ul data-link-id="{{ link["id"] }}">
+                    <li class="link">
+                        <a class="go-link" href="http://go/{{ link["go_link"] }}"><span contenteditable>go/{{ link["go_link"] }}</span></a>
+                        <div class="separator"></div>
+                        <a class="full-link" href="{{ link["full_link"] }}">{{ link["full_link"] }}</a>
+                        <i class="fa-solid fa-pen-to-square" onClick="openEditModal('{{ link["id"] }}', '{{ link["go_link"] }}', '{{ link["full_link"] }}')"></i>
+                        <i class="fa-solid fa-trash" onClick="deleteLink('{{ link["id"] }}')"></i>
+                    </li>
+                </ul>
+            {% endfor %}
+        </ul>
+
+
+        <!-- Edit modal -->
+        <div class="modal micromodal-slide" id="edit-modal" aria-hidden="true" data-edit-id="">
+            <div class="modal__overlay" tabindex="-1" data-micromodal-close>
+              <div class="modal__container" role="dialog" aria-modal="true" aria-labelledby="modal-1-title">
+                <header class="modal__header">
+                  <h2 class="modal__title" id="modal-1-title">
+                    Edit
+                  </h2>
+                  <button class="modal__close" aria-label="Close modal" data-micromodal-close></button>
+                </header>
+                <main class="modal__content" id="modal-1-content">
+                    <div>
+                        <h5>Go link: </h5>
+                        <span style="flex-shrink: 0;">go/</span>
+                        <span class="edit-link" contenteditable="true" id="edit-go-link"></span>
+                    </div>
+                    <div>
+                        <h5>Full link: </h5>
+                        <span class="edit-link" contenteditable="true" id="edit-full-link"></span>
+                    </div>
+                </main>
+                <footer class="modal__footer">
+                  <button class="modal__btn modal__btn-primary" onclick="saveEdit()">Save</button>
+                  <button class="modal__btn" data-micromodal-close aria-label="Close this dialog window">Close</button>
+                </footer>
+              </div>
+            </div>
+          </div>
+
+        <!-- New modal -->
+        <div class="modal micromodal-slide" id="new-modal" aria-hidden="true" data-edit-id="">
+            <div class="modal__overlay" tabindex="-1" data-micromodal-close>
+              <div class="modal__container" role="dialog" aria-modal="true" aria-labelledby="modal-1-title">
+                <header class="modal__header">
+                  <h2 class="modal__title" id="modal-1-title">
+                    Create
+                  </h2>
+                  <button class="modal__close" aria-label="Close modal" data-micromodal-close></button>
+                </header>
+                <main class="modal__content" id="modal-1-content">
+                    <div>
+                        <h5>Go link: </h5>
+                        <span style="flex-shrink: 0;">go/</span>
+                        <span class="edit-link" contenteditable="true" id="new-go-link"></span>
+                    </div>
+                    <div>
+                        <h5>Full link: </h5>
+                        <input contenteditable="true" id="new-full-link"></input>
+                    </div>
+                </main>
+                <footer class="modal__footer">
+                  <button class="modal__btn modal__btn-primary" onclick="saveNew()">Save</button>
+                  <button class="modal__btn" data-micromodal-close aria-label="Close this dialog window">Close</button>
+                </footer>
+              </div>
+            </div>
+        </div>
+
+        <i style="margin-top: 16px;" class="fa-solid fa-circle-plus" data-micromodal-trigger="new-modal"></i>
+    </div>
+  </body>
+</html>
