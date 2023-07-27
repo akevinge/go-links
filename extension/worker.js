@@ -1,5 +1,5 @@
 chrome.declarativeNetRequest.updateDynamicRules({
-  removeRuleIds: [1, 2, 3, 4, 5],
+  removeRuleIds: [1, 2, 3, 4, 5, 6],
   addRules: [
     {
       id: 1,
@@ -68,6 +68,20 @@ chrome.declarativeNetRequest.updateDynamicRules({
       },
       condition: {
         regexFilter: "^http://p/(.*)",
+        resourceTypes: ["main_frame"],
+      },
+    },
+    {
+      id: 6,
+      priority: 1,
+      action: {
+        type: "redirect",
+        redirect: {
+		url: "https://drive.google.com",
+        },
+      },
+      condition: {
+        regexFilter: "^http://d/(.*)",
         resourceTypes: ["main_frame"],
       },
     },

@@ -174,7 +174,7 @@
     <div class="inner">
         <h1>Your Go Links</h1>
         <ul>
-            {% for link in links %}
+            {% for link in links |sort(attribute='go_link') %}
                 <ul data-link-id="{{ link["id"] }}">
                     <li class="link">
                         <a class="go-link" href="http://go/{{ link["go_link"] }}"><span contenteditable>go/{{ link["go_link"] }}</span></a>
