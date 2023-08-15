@@ -5,7 +5,7 @@ services:
     build:
       dockerfile: ./Dockerfile
     ports:
-      - 5000:5000
+      - 127.0.0.1:5000:8000
     volumes:
       - "$HOME/go-links:/usr/src/app/go-links"
     

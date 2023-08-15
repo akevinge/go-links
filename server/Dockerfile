@@ -9,4 +9,4 @@ RUN pip3.10 install pipenv
 WORKDIR /usr/src/app
 RUN pipenv install
 
-CMD [ "pipenv", "run", "python", "server.py" ]
+CMD [ "pipenv", "run", "gunicorn", "-w", "4", "--bind", "0.0.0.0:8000", "server:app" ]
