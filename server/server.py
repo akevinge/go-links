@@ -2,8 +2,10 @@ from flask import Flask, redirect, Response, request, render_template
 from http import HTTPStatus
 import pysondb
 from pathlib import Path
+from flask_cors import CORS
 
 app = Flask(__name__)
+CORS(app)
 app.config["TEMPLATES_AUTO_RELOAD"] = True
 
 Path("go-links/").mkdir(parents=True, exist_ok=True)
