@@ -1,5 +1,5 @@
 chrome.declarativeNetRequest.updateDynamicRules({
-  removeRuleIds: [1, 2, 3, 4, 5, 6],
+  removeRuleIds: [1, 2, 3, 4, 5, 6, 7],
   addRules: [
     {
       id: 1,
@@ -82,6 +82,20 @@ chrome.declarativeNetRequest.updateDynamicRules({
       },
       condition: {
         regexFilter: "^http://d/(.*)",
+        resourceTypes: ["main_frame"],
+      },
+    },
+    {
+      id: 7,
+      priority: 1,
+      action: {
+        type: "redirect",
+        redirect: {
+		url: "https://outlook.live.com/mail",
+        },
+      },
+      condition: {
+        regexFilter: "^http://o/(.*)",
         resourceTypes: ["main_frame"],
       },
     },
