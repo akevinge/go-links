@@ -14,16 +14,11 @@ db = pysondb.getDb("./go-links/links.json")
 
 @app.route("/", strict_slashes=False)
 def home():
-    return redirect("/go")
-
-
-@app.route("/go", strict_slashes=False)
-def all_links():
     links = db.getAll()
     return render_template("links.html", links=links)
 
 
-@app.route("/go/<id>", methods=["DELETE"], strict_slashes=False)
+@app.route("/<id>", methods=["DELETE"], strict_slashes=False)
 def delete_link(id):
     deleted = db.deleteById(id)
     if deleted:
@@ -32,7 +27,7 @@ def delete_link(id):
         return Response(status=HTTPStatus.NOT_FOUND)
 
 
-@app.route("/go/<id>", methods=["PUT"], strict_slashes=False)
+@app.route("/<id>", methods=["PUT"], strict_slashes=False)
 def edit_link(id):
     data = request.get_json()
     if not data["go_link"]:
@@ -53,7 +48,7 @@ def edit_link(id):
     return Response(status=HTTPStatus.OK)
 
 
-@app.route("/go", methods=["POST"], strict_slashes=False)
+@app.route("/", methods=["POST"], strict_slashes=False)
 def create_link():
     data = request.get_json()
     if not data["go_link"]:
@@ -78,7 +73,7 @@ def create_link():
     return Response(status=HTTPStatus.CREATED)
 
 
-@app.route("/go/<link>", strict_slashes=False)
+@app.route("/<link>", strict_slashes=False)
 def go(link):
     links = db.getBy({"go_link": link})
     if len(links) == 0:

@@ -308,7 +308,7 @@
             const id = modal.getAttribute("data-edit-id");
             const goLink = modal.querySelector("#edit-go-link").innerHTML;
             const fullLink = modal.querySelector("#edit-full-link").innerHTML;
-            await fetch(`http://localhost:5000/go/${id}`, { 
+            await fetch(`/${id}`, { 
                 method: "PUT",
                 headers: { "Content-Type": "application/json" },
                 body: JSON.stringify({go_link: goLink, full_link: fullLink })
@@ -318,7 +318,7 @@
         }
 
         async function deleteLink(id) {
-            await fetch(`http://localhost:5000/go/${id}`, { 
+            await fetch(`/${id}`, { 
                 method: "DELETE",
             }).then(()=> location.href = "/").catch(err=> alert("unable to delete link: ", err));
         }
@@ -333,7 +333,7 @@
             const modal = document.getElementById("new-modal");
             const goLink = modal.querySelector("#new-go-link").innerHTML;
             const fullLink = modal.querySelector("#new-full-link").value;
-            await fetch(`http://localhost:5000/go`, { 
+            await fetch(`/`, { 
                 method: "POST",
                 headers: { "Content-Type": "application/json" },
                 body: JSON.stringify({go_link: goLink, full_link: fullLink })
