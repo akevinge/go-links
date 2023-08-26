@@ -1,4 +1,5 @@
-function registerRedirects(linkServerURL) {
+function registerRedirects(linkServerURL, apiKey) {
+    console.log(apiKey);
     chrome.declarativeNetRequest.updateDynamicRules({
         removeRuleIds: [1, 2, 3, 4, 5, 6, 7],
         addRules: [
@@ -8,7 +9,7 @@ function registerRedirects(linkServerURL) {
                 action: {
                     type: 'redirect',
                     redirect: {
-                        regexSubstitution: `${linkServerURL}\\1`,
+                        regexSubstitution: `${linkServerURL}\\1?key=${apiKey}`,
                     },
                 },
                 condition: {
@@ -106,12 +107,15 @@ function registerRedirects(linkServerURL) {
 }
 
 chrome.storage.local.get(
-    { linkServerURL: 'http://localhost:5000/go' },
+    { linkServerURL: 'http://localhost:5000/go', linkServerAPIKey: '' },
     (items) => {
-        registerRedirects(items.linkServerURL);
+        registerRedirects(items.linkServerURL, items.linkServerAPIKey);
     },
 );
 
 chrome.storage.onChanged.addListener((changes) => {
-    registerRedirects(changes.linkServerURL.newValue);
+    registerRedirects(
+        changes.linkServerURL.newValue,
+        changes.linkServerAPIKey.newValue || changes.linkServerAPIKey.oldValue,
+    );
 });

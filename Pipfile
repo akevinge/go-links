@@ -4,11 +4,6 @@ verify_ssl = true
 name = "pypi"
 
 [packages]
-flask = "*"
-pysondb = "*"
-gunicorn = "*"
-flask-cors = "*"
-python-dotenv = "*"
 
 [dev-packages]
 

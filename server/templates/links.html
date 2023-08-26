@@ -308,19 +308,19 @@
             const id = modal.getAttribute("data-edit-id");
             const goLink = modal.querySelector("#edit-go-link").innerHTML;
             const fullLink = modal.querySelector("#edit-full-link").innerHTML;
-            await fetch(`/${id}`, { 
+            await fetch(`/${id}?key={{ key }}`, { 
                 method: "PUT",
                 headers: { "Content-Type": "application/json" },
                 body: JSON.stringify({go_link: goLink, full_link: fullLink })
-            }).then(()=> location.href = "/").catch(err=> alert("unable to edit link: ", err));
+            }).then(()=> location.href = "/?key={{ key }}").catch(err=> alert("unable to edit link: ", err));
             resetEdit();
             MicroModal.close("edit-modal");
         }
 
         async function deleteLink(id) {
-            await fetch(`/${id}`, { 
+            await fetch(`/${id}?key={{ key }}`, { 
                 method: "DELETE",
-            }).then(()=> location.href = "/").catch(err=> alert("unable to delete link: ", err));
+            }).then(()=> location.href = "/?key={{ key }}").catch(err=> alert("unable to delete link: ", err));
         }
 
         function resetNew() {
@@ -333,11 +333,11 @@
             const modal = document.getElementById("new-modal");
             const goLink = modal.querySelector("#new-go-link").innerHTML;
             const fullLink = modal.querySelector("#new-full-link").value;
-            await fetch("/", { 
+            await fetch("/?key={{ key }}", { 
                 method: "POST",
                 headers: { "Content-Type": "application/json" },
                 body: JSON.stringify({go_link: goLink, full_link: fullLink })
-            }).then(()=> location.href = "/").catch(err=> alert("unable to edit link: ", err));
+            }).then(()=> location.href = "/?key={{ key }}").catch(err=> alert("unable to edit link: ", err));
             resetNew();
             MicroModal.close("new-modal");
         }

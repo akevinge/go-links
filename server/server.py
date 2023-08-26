@@ -3,6 +3,13 @@ from http import HTTPStatus
 import pysondb
 from pathlib import Path
 from flask_cors import CORS
+from dotenv import load_dotenv
+from os import environ
+
+
+load_dotenv(".env")
+
+API_KEY = environ.get("API_KEY")
 
 app = Flask(__name__)
 CORS(app)
@@ -14,12 +21,20 @@ db = pysondb.getDb("./go-links/links.json")
 
 @app.route("/", strict_slashes=False)
 def home():
+    key = request.args.get("key")
+    if key != API_KEY:
+        return Response(status=HTTPStatus.UNAUTHORIZED)
+
     links = db.getAll()
-    return render_template("links.html", links=links)
+    return render_template("links.html", links=links, key=API_KEY)
 
 
 @app.route("/<id>", methods=["DELETE"], strict_slashes=False)
 def delete_link(id):
+    key = request.args.get("key")
+    if key != API_KEY:
+        return Response(status=HTTPStatus.UNAUTHORIZED)
+
     deleted = db.deleteById(id)
     if deleted:
         return Response(status=HTTPStatus.OK)
@@ -29,6 +44,10 @@ def delete_link(id):
 
 @app.route("/<id>", methods=["PUT"], strict_slashes=False)
 def edit_link(id):
+    key = request.args.get("key")
+    if key != API_KEY:
+        return Response(status=HTTPStatus.UNAUTHORIZED)
+
     data = request.get_json()
     if not data["go_link"]:
         return Response(
@@ -50,6 +69,10 @@ def edit_link(id):
 
 @app.route("/", methods=["POST"], strict_slashes=False)
 def create_link():
+    key = request.args.get("key")
+    if key != API_KEY:
+        return Response(status=HTTPStatus.UNAUTHORIZED)
+
     data = request.get_json()
     if not data["go_link"]:
         return Response(
@@ -75,6 +98,10 @@ def create_link():
 
 @app.route("/<link>", strict_slashes=False)
 def go(link):
+    key = request.args.get("key")
+    if key != API_KEY:
+        return Response(status=HTTPStatus.UNAUTHORIZED)
+
     links = db.getBy({"go_link": link})
     if len(links) == 0:
         return Response(status=HTTPStatus.NOT_FOUND)
