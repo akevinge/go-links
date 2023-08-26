@@ -333,7 +333,7 @@
             const modal = document.getElementById("new-modal");
             const goLink = modal.querySelector("#new-go-link").innerHTML;
             const fullLink = modal.querySelector("#new-full-link").value;
-            await fetch(`/`, { 
+            await fetch("/", { 
                 method: "POST",
                 headers: { "Content-Type": "application/json" },
                 body: JSON.stringify({go_link: goLink, full_link: fullLink })
