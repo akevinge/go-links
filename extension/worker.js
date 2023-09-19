@@ -94,7 +94,7 @@ function registerRedirects(linkServerURL, apiKey) {
                 action: {
                     type: 'redirect',
                     redirect: {
-                        url: 'https://outlook.live.com/mail',
+                        url: 'https://outlook.office365.com/mail',
                     },
                 },
                 condition: {
