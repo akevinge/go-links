@@ -1,0 +1,73 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Go Links</title>
+</head>
+
+<style>
+    li {
+        display: flex;
+        gap: 5px;
+        align-items: center;
+    }
+
+    button {
+        margin: 0;
+        padding: 0;
+        background: none;
+        border: none;
+        outline: none;
+    }
+
+    button:hover {
+        cursor: pointer;
+    }
+
+    button:hover img {
+        filter: invert(15%) sepia(81%) saturate(7214%) hue-rotate(359deg) brightness(107%) contrast(110%);
+    }
+</style>
+
+<script>
+    document.addEventListener("DOMContentLoaded", function(event) {
+        document.querySelectorAll("button.delete-button").forEach(function(button) {
+            button.addEventListener("click", async function(event) {
+                const shortcut = event.currentTarget.dataset.deleteShortcut;
+                if (typeof shortcut === "undefined") {
+                    console.error("No shortcut found on delete button, cannot delete link. Please set the data-delete-shortcut attribute on the button.");
+                    return;
+                }
+
+                const response = await fetch("/go/" + shortcut, {
+                    method: "DELETE",
+                });
+
+                if (!response.ok) {
+                    console.error("Failed to delete link with shortcut: " + shortcut);
+                    return;
+                }
+
+                window.location.reload();
+            });
+        });
+    });
+</script>
+
+<body>
+    Go Links
+
+    <ul>
+        <%= for link <- go_links do %>
+            <li>
+                <a href="/go/<%= link.shortcut %>"><%= link.shortcut %></a>
+                <a href="<%= link.target_url %>"><%= link.target_url %></a>
+                <button class="delete-button" data-delete-shortcut="<%= link.shortcut %>">
+                    <img style="width: 20px; height: 20px;" src="/assets/delete-icon.svg" />
+                </button>
+            </li>
+        <% end %>
+    </ul>
+</body>
+</html>
