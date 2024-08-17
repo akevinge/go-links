@@ -4,17 +4,19 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Go Links</title>
+
+    <script src="https://kit.fontawesome.com/52382e4096.js" crossorigin="anonymous"></script>
 </head>
 
 <style>
     li {
         display: flex;
-        gap: 5px;
+        gap: 8px;
         align-items: center;
     }
 
     button {
-        margin: 0;
+        margin: 0 0 0 5px;
         padding: 0;
         background: none;
         border: none;
@@ -23,10 +25,11 @@
 
     button:hover {
         cursor: pointer;
+        color: black;
     }
 
-    button:hover img {
-        filter: invert(15%) sepia(81%) saturate(7214%) hue-rotate(359deg) brightness(107%) contrast(110%);
+    button:hover i {
+        color: red;
     }
 </style>
 
@@ -65,7 +68,7 @@
                 <a href="/go/<%= link.shortcut %>?api_key=<%= api_key %>"><%= link.shortcut %></a>
                 <a href="<%= link.target_url %>"><%= link.target_url %></a>
                 <button class="delete-button" data-delete-shortcut="<%= link.shortcut %>">
-                    <img style="width: 20px; height: 20px;" src="/assets/delete-icon.svg" />
+                    <i class="fa-solid fa-trash"></i>
                 </button>
             </li>
         <% end %>
