@@ -9,7 +9,7 @@ function registerRedirects(linkServerURL, apiKey) {
                 action: {
                     type: 'redirect',
                     redirect: {
-                        regexSubstitution: `${linkServerURL}/\\1?key=${apiKey}`,
+                        regexSubstitution: `${linkServerURL}/\\1?api_key=${apiKey}`,
                     },
                 },
                 condition: {

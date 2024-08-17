@@ -17,11 +17,14 @@ defmodule Server.Router do
     json_decoder: Jason
   )
 
+  plug(Server.Auth.Plug)
+
   plug(:match)
   plug(:dispatch)
 
   @template_dir "lib/templates"
 
+  # Redirect to a location with a status code.
   @spec redirect(Plug.Conn.t(), String.t(), integer | atom) :: no_return()
   defp redirect(conn, location, status) do
     conn
@@ -29,8 +32,9 @@ defmodule Server.Router do
     |> send_resp(status, "Redirecting...")
   end
 
+  # Render a template with assigns.
   @spec render(Plug.Conn.t(), integer | atom, String.t(), Keyword.t()) :: no_return()
-  defp render(conn, status, template, assigns \\ []) do
+  defp render(conn, status, template, assigns) do
     body =
       @template_dir
       |> Path.join(template)
@@ -44,30 +48,38 @@ defmodule Server.Router do
   end
 
   get "/go" do
-    go_links = GoLink.get_all()
-    render(conn, :ok, "index.html.eex", go_links: go_links)
+    user_id = conn.assigns[:user_id]
+    api_key = conn.assigns[:api_key]
+
+    go_links = GoLinks.get_all(user_id)
+    render(conn, :ok, "index.html.eex", go_links: go_links, api_key: api_key)
   end
 
   get "/go/*shortcut" do
+    user_id = conn.assigns[:user_id]
+    api_key = conn.assigns[:api_key]
+
     # `shortcut` is a list of path segments.
     shortcut = shortcut |> Enum.join("/") |> String.trim("/")
 
     # Redirect to the target URL if the shortcut exists.
-    case GoLink.get_by_shortcut(shortcut) do
+    case GoLinks.get_by_shortcut(user_id, shortcut) do
       %GoLink{target_url: target_url} ->
         redirect(conn, target_url, :moved_permanently)
 
       nil ->
-        render(conn, :not_found, "404.html.eex")
+        render(conn, :not_found, "404.html.eex", api_key: api_key)
     end
   end
 
   delete "/go/*shortcut" do
+    user_id = conn.assigns[:user_id]
+
     # `shortcut` is a list of path segments.
     shortcut = shortcut |> Enum.join("/") |> String.trim("/")
 
     # Delete the shortcut if it exists.
-    case GoLink.delete_go_link(shortcut) do
+    case GoLinks.delete_go_link(user_id, shortcut) do
       :ok ->
         send_resp(conn, :ok, "")
 
@@ -77,9 +89,11 @@ defmodule Server.Router do
   end
 
   post "/go" do
+    user_id = conn.assigns[:user_id]
+
     with %{"shortcut" => shortcut, "target_url" => target_url} <- conn.body_params,
          shortcut <- LinkParser.remove_go_prefix(shortcut),
-         %GoLink{} <- GoLink.create_go_link(shortcut, target_url) do
+         %GoLink{} <- GoLinks.create_go_link(user_id, shortcut, target_url) do
       send_resp(conn, :created, "")
     else
       {:error, :already_exists} ->
@@ -91,6 +105,7 @@ defmodule Server.Router do
   end
 
   match _ do
-    render(conn, :not_found, "404.html.eex")
+    api_key = conn.assigns[:api_key]
+    render(conn, :not_found, "404.html.eex", api_key: api_key)
   end
 end

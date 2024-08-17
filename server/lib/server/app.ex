@@ -8,6 +8,7 @@ defmodule Server.App do
   def start(_type, _args) do
     # List all child processes to be supervised
     children = [
+      {Server.Auth.UserLookup, []},
       {Plug.Cowboy,
        scheme: :http, plug: Server.Router, port: Application.fetch_env!(:go_links, :port)}
     ]

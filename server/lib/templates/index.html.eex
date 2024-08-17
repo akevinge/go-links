@@ -40,7 +40,8 @@
                     return;
                 }
 
-                const response = await fetch("/go/" + shortcut, {
+                const url = `/go/${shortcut}?api_key=<%= api_key %>`;
+                const response = await fetch(url, {
                     method: "DELETE",
                 });
 

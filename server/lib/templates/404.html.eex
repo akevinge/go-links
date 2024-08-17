@@ -71,7 +71,7 @@
                     return;
                 }
 
-                const response = await fetch("/go", {
+                const response = await fetch("/go?api_key=<%= api_key %>", {
                     method: "POST",
                     headers: {
                         "Content-Type": "application/json",
@@ -87,7 +87,7 @@
                     return;
                 }
 
-                window.location.href = `/go/${shortcutValue}`;
+                window.location.href = `/go/${shortcutValue}?api_key=<%= api_key %>`;
             }
         });
     });
