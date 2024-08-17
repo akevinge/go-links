@@ -12,3 +12,7 @@ config :go_links,
       api_key: "CHANGE_ME_2"
     }
   ]
+
+# config :amnesia,
+#   dir: "/home/kevin/env/go-links/server/Mnesia.nonode@nohost"
+# _build/prod/rel/go_links/bin/go_links start

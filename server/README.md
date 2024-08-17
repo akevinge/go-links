@@ -8,8 +8,19 @@
 
 3.  Run the following commands
 
+    **Development**:
+
     ```bash
     mix deps.get
     mix amnesia.create -d Database --disk
     mix run --no-halt
+    ```
+
+    **Production**:
+
+    ```bash
+    mix deps.get
+    MIX_ENV=prod elixir --erl "-name go_links@$HOSTNAME" -S mix db.create
+    MIX_ENV=prod mix release
+    _build/prod/rel/go_links/bin/go_links start
     ```

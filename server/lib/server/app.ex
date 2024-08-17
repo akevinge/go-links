@@ -4,6 +4,7 @@ defmodule Server.App do
   @moduledoc false
 
   use Application
+  use Amnesia
 
   def start(_type, _args) do
     # List all child processes to be supervised

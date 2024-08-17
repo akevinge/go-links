@@ -27,3 +27,6 @@ go_links_ex-*.tar
 
 # Amensia database disk files.
 Mnesia*/
+
+# Folder needed for dialyzer analysis.
+.elixir_ls/

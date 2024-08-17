@@ -62,7 +62,7 @@
     <ul>
         <%= for link <- go_links do %>
             <li>
-                <a href="/go/<%= link.shortcut %>"><%= link.shortcut %></a>
+                <a href="/go/<%= link.shortcut %>?api_key=<%= api_key %>"><%= link.shortcut %></a>
                 <a href="<%= link.target_url %>"><%= link.target_url %></a>
                 <button class="delete-button" data-delete-shortcut="<%= link.shortcut %>">
                     <img style="width: 20px; height: 20px;" src="/assets/delete-icon.svg" />
